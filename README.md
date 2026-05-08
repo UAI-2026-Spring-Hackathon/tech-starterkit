@@ -79,26 +79,49 @@ source set_env.sh
 
 > 추가 패키지(`pypdf`, `chromadb` 등)를 사용할 경우 `requirements.txt`에서 해당 줄의 주석을 해제한 뒤 이미지를 빌드하세요.
 
-### 빌드
+### 1단계 — 빌드 (대회 전 미리 준비)
+
+키 없이 빌드할 수 있습니다. 패키지 설치만 수행하며 키는 필요하지 않습니다.
 
 ```bash
 docker build -t hackathon-rag .
 ```
 
-### 실행
+### 2단계 — 실행
+
+#### 개발 중 (HACKATHON_KEY 없이)
+
+`HACKATHON_KEY` 없이 실행하면 샘플 더미 질문 5개로 자동 동작합니다.
+파이프라인 구현과 테스트는 대회 전에 미리 진행할 수 있습니다.
 
 ```bash
 # Linux / Mac
 docker run --rm \
-  -e HACKATHON_KEY=<key> \
-  -e UPSTAGE_API_KEY=<key> \
+  -e UPSTAGE_API_KEY=<your_key> \
   -v "$(pwd):/workspace" \
   hackathon-rag
 
 # Windows PowerShell
 docker run --rm `
-  -e HACKATHON_KEY=<key> `
-  -e UPSTAGE_API_KEY=<key> `
+  -e UPSTAGE_API_KEY=<your_key> `
+  -v "${PWD}:/workspace" `
+  hackathon-rag
+```
+
+#### 대회 당일 (HACKATHON_KEY 공지 후)
+
+```bash
+# Linux / Mac
+docker run --rm \
+  -e HACKATHON_KEY=<공지된_키> \
+  -e UPSTAGE_API_KEY=<your_key> \
+  -v "$(pwd):/workspace" \
+  hackathon-rag
+
+# Windows PowerShell
+docker run --rm `
+  -e HACKATHON_KEY=<공지된_키> `
+  -e UPSTAGE_API_KEY=<your_key> `
   -v "${PWD}:/workspace" `
   hackathon-rag
 ```
