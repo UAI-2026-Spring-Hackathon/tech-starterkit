@@ -1,5 +1,16 @@
 # Starter Kit — 운영 가이드
 
+## 시작하기
+
+### 1. 코드 가져오기
+
+이 저장소를 로컬 환경에 복제합니다.
+
+```bash
+git clone https://github.com/UAI-2026-Spring-Hackathon/tech-starterkit
+cd tech-starterkit
+```
+
 ## 폴더 구조
 
 ```
