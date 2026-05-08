@@ -7,10 +7,10 @@ decryptor.py — Test Suite 복호화 모듈
 
 [대회 당일]:
     주최 측이 Encrypted_Test_Suite.json 을 배포하고 HACKATHON_KEY 를 공지합니다.
-    터미널에 아래 명령어를 한 번만 입력하면 이후 실행은 자동으로 실제 데이터를 사용합니다.
+    제공된 스크립트로 환경변수를 설정하면 이후 실행은 자동으로 실제 데이터를 사용합니다.
 
-        Linux/Mac:  export HACKATHON_KEY=<공지된 키>
-        Windows:    set HACKATHON_KEY=<공지된 키>
+        Linux/Mac:  source set_env.sh
+        Windows:    . .\\set_env.ps1
 
 반환 형식:
     [

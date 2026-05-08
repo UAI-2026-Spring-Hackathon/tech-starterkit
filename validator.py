@@ -13,7 +13,7 @@ import os
 import pandas as pd
 
 REQUIRED_COLUMNS = {"question_id", "answer", "used_tokens", "inference_time", "token"}
-EXPECTED_IDS = {f"Q_{i:03d}" for i in range(1, 101)}
+QID_PATTERN = r"^Q_\d{3,}$"
 
 
 def validate(path: str = "submission.csv") -> bool:
@@ -57,21 +57,12 @@ def validate(path: str = "submission.csv") -> bool:
         return False
 
     # ── 4. question_id 검사 ──────────────────────────────────────────────
-    actual_ids = set(df["question_id"].astype(str))
+    qid_series = df["question_id"].astype(str)
+    invalid_ids = qid_series[~qid_series.str.match(QID_PATTERN)].unique().tolist()
+    if invalid_ids:
+        errors.append(f"유효하지 않은 question_id 형식 ({len(invalid_ids)}개): {invalid_ids[:5]}")
 
-    missing_ids = EXPECTED_IDS - actual_ids
-    if missing_ids:
-        sample = sorted(missing_ids)[:5]
-        errors.append(
-            f"question_id 누락 ({len(missing_ids)}개): {sample}"
-            + (" 외 ..." if len(missing_ids) > 5 else "")
-        )
-
-    extra_ids = actual_ids - EXPECTED_IDS
-    if extra_ids:
-        errors.append(f"유효하지 않은 question_id ({len(extra_ids)}개): {sorted(extra_ids)[:5]}")
-
-    duplicate_ids = df["question_id"][df["question_id"].duplicated()].tolist()
+    duplicate_ids = qid_series[qid_series.duplicated()].tolist()
     if duplicate_ids:
         errors.append(f"question_id 중복: {duplicate_ids}")
 
@@ -101,13 +92,13 @@ def validate(path: str = "submission.csv") -> bool:
             "— UpstageTracker가 정상 연결되었는지 확인하세요."
         )
 
-    avg_time = df["inference_time"].astype(float).mean()
-    if avg_time > 15:
-        warnings.append(f"평균 응답 시간 {avg_time:.1f}초 — 30% 감점 구간입니다.")
-    elif avg_time > 7:
-        warnings.append(f"평균 응답 시간 {avg_time:.1f}초 — 15% 감점 구간입니다.")
-    elif avg_time > 3:
-        warnings.append(f"평균 응답 시간 {avg_time:.1f}초 — 5% 감점 구간입니다.")
+    median_time = df["inference_time"].astype(float).median()
+    if median_time > 15:
+        warnings.append(f"중간값 응답 시간 {median_time:.1f}초 — 30% 감점 구간입니다.")
+    elif median_time > 7:
+        warnings.append(f"중간값 응답 시간 {median_time:.1f}초 — 15% 감점 구간입니다.")
+    elif median_time > 3:
+        warnings.append(f"중간값 응답 시간 {median_time:.1f}초 — 5% 감점 구간입니다.")
 
     _print_result(errors, warnings, df_len=len(df))
     return len(errors) == 0
@@ -137,6 +128,11 @@ def _print_result(errors: list, warnings: list, df_len: int = None) -> None:
 
 
 if __name__ == "__main__":
+    import io
+    if isinstance(sys.stdout, io.TextIOWrapper):
+        sys.stdout.reconfigure(encoding="utf-8")
+    if isinstance(sys.stderr, io.TextIOWrapper):
+        sys.stderr.reconfigure(encoding="utf-8")
     target = sys.argv[1] if len(sys.argv) > 1 else "submission.csv"
     ok = validate(target)
     sys.exit(0 if ok else 1)

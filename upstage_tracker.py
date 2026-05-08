@@ -115,11 +115,11 @@ class UpstageTracker:
         ]
         df.to_csv(path, index=False, encoding="utf-8")
 
-        avg_time    = df["inference_time"].mean()
+        median_time = df["inference_time"].median()
         total_tok   = df["used_tokens"].sum()
         print(
             f"[UpstageTracker] {path} 저장 완료\n"
-            f"  기록 수: {len(df)}개 | 평균 응답: {avg_time:.2f}초 | 총 토큰: {total_tok:,}"
+            f"  기록 수: {len(df)}개 | 중간값 응답: {median_time:.2f}초 | 총 토큰: {total_tok:,}"
         )
 
     # ── 내부 HTTP 호출 ───────────────────────────────────────────────────

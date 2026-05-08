@@ -12,12 +12,12 @@ baseline_rag.py — RAG 파이프라인 스켈레톤 (Starter Kit)
     python baseline_rag.py
 """
 
-import os
 from decryptor import load_test_suite
 from upstage_tracker import UpstageTracker
 from validator import validate
 
-CORPUS_DIR = "corpus"   # 주최 측이 배포한 PDF 폴더 경로
+CORPUS_DIR      = "distribution/corpus"
+TEST_SUITE_PATH = "distribution/test_suite/Encrypted_Test_Suite.json"
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -37,7 +37,7 @@ def build_index(corpus_dir: str):
     페이지 단위 / 문단 단위 / 고정 토큰 수 / Semantic Chunking
 
     ── 인덱싱 옵션 ────────────────────────────────────────────
-    BM25              : 한국어 키워드 검색에 강함
+    BM25              : 키워드 기반 검색, 빠름
     Dense Retrieval   : Upstage Embedding API / sentence-transformers
     Hybrid (권장)     : BM25 + Dense 결합
     Vector DB         : ChromaDB / FAISS / Pinecone 등
@@ -129,7 +129,7 @@ def run_pipeline(output_path: str = "submission.csv") -> None:
 
     # 질문 로드
     print("[2/3] 질문 로드 중...")
-    questions = load_test_suite()
+    questions = load_test_suite(path=TEST_SUITE_PATH)
     print(f"  → {len(questions)}개 질문\n")
 
     # Phase 2·3: 질문별 검색 + 생성
@@ -155,4 +155,9 @@ def run_pipeline(output_path: str = "submission.csv") -> None:
 
 
 if __name__ == "__main__":
+    import sys, io
+    if isinstance(sys.stdout, io.TextIOWrapper):
+        sys.stdout.reconfigure(encoding="utf-8")
+    if isinstance(sys.stderr, io.TextIOWrapper):
+        sys.stderr.reconfigure(encoding="utf-8")
     run_pipeline()
